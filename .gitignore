@@ -1,5 +1,21 @@
+.DS_Store
+
+*.iml
+.idea
+
+.classpath
+.project
+
+
+#directories
+.settings
 .gradle
+
+out
+bin
+.metadata
 build/
+target/
 
 # Ignore Gradle GUI config
 gradle-app.setting

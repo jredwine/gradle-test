@@ -1,0 +1,74 @@
+import java.util.regex.Matcher
+
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            url "${artifactory_contextUrl}/iscs-common"
+            credentials {
+                username = "${artifactory_user}"
+                password = "${artifactory_password}"
+            }
+        }
+    }
+    dependencies {
+        classpath 'com.iscs.tools:build-utils:0.5.0-SNAPSHOT'
+        classpath 'net.researchgate:gradle-release:2.1.2'
+    }
+}
+
+println "LOAD Standards"
+apply plugin: 'standards'
+apply plugin: 'net.researchgate.release'
+
+println "start of $project.name"
+
+
+release {
+    failOnCommitNeeded = true
+    failOnPublishNeeded = true
+    failOnSnapshotDependencies = true
+    failOnUnversionedFiles = true
+    failOnUpdateNeeded = true
+    revertOnFail = true
+    preCommitText = ''
+    preTagCommitMessage = '[Gradle Release Plugin] - pre tag commit: '
+    tagCommitMessage = '[Gradle Release Plugin] - creating tag: '
+    newVersionCommitMessage = '[Gradle Release Plugin] - new version commit: '
+    tagTemplate = '${version}'
+    versionPropertyFile = 'gradle.properties'
+    versionProperties = []
+    versionPatterns = [
+            /(\d+)([^\d]*$)/: { Matcher m, Project p -> m.replaceAll("${(m[0][1] as int) + 1}${m[0][2]}") }
+    ]
+    scmAdapters = [
+            net.researchgate.release.GitAdapter,
+    ]
+
+    git {
+        requireBranch = '' //''master'
+        pushToRemote = 'origin'
+        pushToCurrentBranch = false
+    }
+}
+
+allprojects {
+    task hello << { task -> println "I'm $task.project.name" }
+    println "end of allprojects $project.name"
+}
+
+subprojects {
+    task bye << { task -> println "bye $task.project.name" }
+    println "end of subprojects $project.name"
+
+
+    beforeEvaluate {
+        println "beforeEvaluate $project.name"
+    }
+
+    afterEvaluate {
+        println "afterEvaluate $project.name"
+    }
+}
+
+println "end of $project.name"
